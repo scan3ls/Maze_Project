@@ -4,7 +4,7 @@ bool keyDown( Character* player, int** map )
 {
     const Uint8* currentKeyStates = SDL_GetKeyboardState( NULL );
     double moveSpeed = 0.03 * 3.0;
-    double rotSpeed = 0.03 * 0.75;
+    double rotSpeed = 0.03 * 1.0;
     //move forward
     if( currentKeyStates[ SDL_SCANCODE_W ] )
     {
@@ -17,7 +17,7 @@ bool keyDown( Character* player, int** map )
         if(map[int(player->posX - player->dirX * moveSpeed)][int(player->posY)] == false) player->posX -= player->dirX * moveSpeed;
         if(map[int(player->posX)][int(player->posY - player->dirY * moveSpeed)] == false) player->posY -= player->dirY * moveSpeed;
     }
-    if( currentKeyStates[ SDL_SCANCODE_A ] )
+    if( currentKeyStates[ SDL_SCANCODE_D ] )
     {
         //both camera direction and camera plane must be rotated
         double oldDirX = player->dirX;
@@ -28,7 +28,7 @@ bool keyDown( Character* player, int** map )
         player->planeY = oldPlaneX * sin(-rotSpeed) + player->planeY * cos(-rotSpeed);
     }
     //rotate left
-    if( currentKeyStates[ SDL_SCANCODE_D ] )
+    if( currentKeyStates[ SDL_SCANCODE_A ] )
     {
         //both camera direction and camera plane must be rotated
         double oldDirX = player->dirX;
