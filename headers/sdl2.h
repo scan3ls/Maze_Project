@@ -53,9 +53,11 @@ void mouseMove( Character* player, int rotDirection );
 
 /* getMap.cpp */
 int** getMap( std::string path );
+int getDeadEnds( int** map );
 
 /* renderer.cpp */
-void render( SDL_Renderer* renderer, Character* player, int** map);
+void render( SDL_Renderer* renderer, Character* player, int** map );
+bool drawAnchovy( SDL_Renderer* renderer, SDL_Texture** anch, SDL_Rect* rect, bool visable );
 
 /* raycaster.cpp */
 void raycaster( Character* player, ViewPort* displays[], int** map );

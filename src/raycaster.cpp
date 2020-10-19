@@ -1,10 +1,20 @@
 #include "../headers/sdl2.h"
-#define VIEW displays[0]
-#define MINIMAP displays[1]
-#define SHEET displays[2]
+#define VIEW displays[0] // main game view
+#define MINIMAP displays[1] // minimap view
+#define SHEET displays[2] // view below minimap
 
 void raycaster( Character* player, ViewPort* displays[], int** map )
 {
+    SDL_Texture* anch = NULL;
+    SDL_Rect rect = {0,0,0,0};
+    SDL_Surface* loadedSurface = IMG_Load( "resources/images/Anchovy.bmp" );
+    bool visable = false;
+    int start = 0, end = 0;
+    SDL_SetColorKey( loadedSurface, SDL_TRUE, SDL_MapRGB( loadedSurface->format,0,0xFF,0xFF) );
+    anch = SDL_CreateTextureFromSurface( VIEW->renderer, loadedSurface );
+    rect.w = loadedSurface->w;
+    rect.h = loadedSurface->h;
+    SDL_FreeSurface( loadedSurface );
 
     for( int x = 0; x < VIEW->width; x++ ) // raycaster
     {
@@ -52,9 +62,9 @@ void raycaster( Character* player, ViewPort* displays[], int** map )
             //jump to next map square, OR in x-direction, OR in y-direction
             if(sideDistX < sideDistY)
             {
-            sideDistX += deltaDistX;
-            mapX += stepX;
-            side = 0;
+                sideDistX += deltaDistX;
+                mapX += stepX;
+                side = 0;
             }
             else
             {
@@ -63,7 +73,16 @@ void raycaster( Character* player, ViewPort* displays[], int** map )
                 side = 1;
             }
             //Check if ray has hit a wall
-            if(map[mapX][mapY] > 0) hit = 1;
+            if(map[mapX][mapY] > 0)
+            {
+                hit = 1;
+            }
+            else if( ( mapX == 15 && mapY == 15 ) )
+            {
+                start = x;
+                visable = true;
+            }
+
         } // end DDA
 
         //Calculate distance projected on camera direction (Euclidean distance will give fisheye effect!)
@@ -92,10 +111,17 @@ void raycaster( Character* player, ViewPort* displays[], int** map )
         drawDispaly( VIEW, x, drawStart, drawEnd, map, side, mapX, mapY );
         // Draw miniMap
         drawMap( MINIMAP, map, player );
+        //SDL_RenderCopy( VIEW->renderer, anch, NULL, &rendQuad );
         // Draw charSheet
         drawSheet( SHEET, player );
 
     } // end raycaster 
+    // Draw Anchovy
+    rect.x = start;
+    double dist = sqrt( pow( 15 - player->posX, 2 ) + pow( 15 - player->posY, 2) );
+    rect.w = rect.w * std::abs( 5 / dist );
+    rect.h = rect.h * std::abs( 5 / dist );
+    drawAnchovy( VIEW->renderer, &anch, &rect, visable );
 }
 
 /**
@@ -173,7 +199,7 @@ void drawMap( ViewPort* view, int** map, Character* player )
     SDL_RenderFillRect( view->renderer, &rect );
     // Draw Facing Vector
     SDL_SetRenderDrawColor( view->renderer,255,0,0,0 );
-    SDL_RenderDrawLine( view->renderer, startX + 32, startY + 32, (startX + 32) + (player->dirX * sqSize), (startY + 32) + (player->dirY * sqSize) );
+    SDL_RenderDrawLine( view->renderer, startX + 32, startY + 32, (startX + 32) + (player->dirY * sqSize), (startY + 32) + (player->dirX * sqSize) );
     SDL_SetRenderDrawColor( view->renderer,0,0,0,0 ); // Black
 
     SDL_Rect left, right, up, down;
