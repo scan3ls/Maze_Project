@@ -3,6 +3,8 @@
 /**
  * setup - setup window and renderer for display
  * 
+ * @window: pointer to created window
+ * @renderer: pointer to created renderer
  */
 
 void setup( SDL_Window** window, SDL_Renderer** renderer )
@@ -32,6 +34,8 @@ void setup( SDL_Window** window, SDL_Renderer** renderer )
 
 /**
  * close - SDL clean up
+ * 
+ * @instance: contains windows and renderers
  */
 void close( SDL_Instance* instance )
 {
@@ -48,6 +52,9 @@ void close( SDL_Instance* instance )
 /**
  * running - gets/execute user commands 
  * 
+ * @e: event queue
+ * 
+ * Return: bool true/false; continue running
  */
 bool run(SDL_Event e)
 {

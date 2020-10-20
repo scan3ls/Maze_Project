@@ -3,11 +3,19 @@
 const int mapWidth = 24;
 const int mapHeight = 24;
 
-
+/**
+ * main - entry point
+ * 
+ * @argc: argument count
+ * @argv: list of arguments
+ *
+ * Retrun: exit status as int
+ */
 int main( int argc, char* argv[] )
 {
     std::string path = "resources/maps/level_0.map";
     int** map = getMap( path.c_str() );
+    //int numEnds = getDeadEnds( map );
 
     // Define windows & renderers
     SDL_Window* mWindow;
@@ -19,7 +27,7 @@ int main( int argc, char* argv[] )
     setup( &mWindow, &mRenderer );
 
     Character player;
-    player.posX = 22; player.posY = 12;
+    player.posX = 12; player.posY = 12;
     player.dirX = -1; player.dirY = 0;
     player.planeX = 0; player.planeY = 0.66;
 
@@ -28,6 +36,7 @@ int main( int argc, char* argv[] )
 
     int mouseX, mouseY;
     SDL_GetMouseState( &mouseX, &mouseY );
+    bool progress = false;
 
     bool running = true;
     while( running )
@@ -39,7 +48,7 @@ int main( int argc, char* argv[] )
                 running = false;
 
 
-            render( mRenderer, &player, map );
+            render( mRenderer, &player, map, &progress );
 
             oldTime = time;
             time = SDL_GetTicks();
@@ -66,15 +75,15 @@ int main( int argc, char* argv[] )
                 default:
                     break;
             }
-            if( (int)player.posX == 22 && (int)player.posY == 22 )
+            if( ((int)player.posX == 22 && (int)player.posY == 22) && progress )
             {
                 player.posX = 1;
                 player.posY = 1;
                 path[21]++;
                 if( path[21] == '3' ) path[21] = '0';
                 map = getMap( path.c_str() );
+                progress = false;
             }
-            // printf( "X: %d - Y: %d\n", (int)player.posX, (int)player.posY );
         }
     }
 

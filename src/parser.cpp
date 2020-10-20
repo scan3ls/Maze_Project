@@ -33,3 +33,32 @@ int** getMap( string path )
     myFile.close();
     return map;
 }
+
+/**
+ * getDeadEnds - get Dead ends for possible anchovy location
+ * 
+ * Return - list of matrix indecies
+ */
+
+int getDeadEnds( int** map )
+{
+    int ends = 0;
+    int row = 1;
+    int column = 1;
+    int up, down, left, right;
+
+    while( row < 23 )
+    {
+        for( column = 1; column < 23; column++ )
+        {
+            if( map[row][column] == 1 ) continue;
+            up = map[row - 1][column];
+            down = map[row + 1][column];
+            left = map[row][column - 1];
+            right = map[row][column + 1];
+            if( ( up + down + left + right ) == 3 ) ends++;
+        }
+        row++;
+    }
+    return ends;
+}

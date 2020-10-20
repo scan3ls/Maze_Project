@@ -56,11 +56,11 @@ int** getMap( std::string path );
 int getDeadEnds( int** map );
 
 /* renderer.cpp */
-void render( SDL_Renderer* renderer, Character* player, int** map );
+void render( SDL_Renderer* renderer, Character* player, int** map, bool* found );
 bool drawAnchovy( SDL_Renderer* renderer, SDL_Texture** anch, SDL_Rect* rect, bool visable );
 
 /* raycaster.cpp */
-void raycaster( Character* player, ViewPort* displays[], int** map );
+void raycaster( Character* player, ViewPort* displays[], int** map, bool* found );
 void wallColor( int x, int side, SDL_Renderer* renderer );
 void drawDispaly( ViewPort* view, int x, int drawStart, int drawEnd, int** map, int side, int mapX, int mapY );
 void drawMap( ViewPort* view, int** map, Character* player );

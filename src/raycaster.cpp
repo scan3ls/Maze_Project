@@ -3,17 +3,26 @@
 #define MINIMAP displays[1] // minimap view
 #define SHEET displays[2] // view below minimap
 
-void raycaster( Character* player, ViewPort* displays[], int** map )
+/**
+ * raycaster - draws graphics to renderer
+ *
+ * @player: player character struct
+ * @displays: list of displays as ViewPorts on the window
+ * @map: level to be rendered
+ * @found: progress flag to move to next level
+ */ 
+
+void raycaster( Character* player, ViewPort* displays[], int** map, bool* found )
 {
     SDL_Texture* anch = NULL;
     SDL_Rect rect = {0,0,0,0};
     SDL_Surface* loadedSurface = IMG_Load( "resources/images/Anchovy.bmp" );
-    bool visable = false;
-    int start = 0, end = 0;
     SDL_SetColorKey( loadedSurface, SDL_TRUE, SDL_MapRGB( loadedSurface->format,0,0xFF,0xFF) );
-    anch = SDL_CreateTextureFromSurface( VIEW->renderer, loadedSurface );
+    bool visable = false;
+    int start = 0;
     rect.w = loadedSurface->w;
     rect.h = loadedSurface->h;
+    anch = SDL_CreateTextureFromSurface( VIEW->renderer, loadedSurface );
     SDL_FreeSurface( loadedSurface );
 
     for( int x = 0; x < VIEW->width; x++ ) // raycaster
@@ -77,7 +86,7 @@ void raycaster( Character* player, ViewPort* displays[], int** map )
             {
                 hit = 1;
             }
-            else if( ( mapX == 15 && mapY == 15 ) )
+            else if( ( mapX == 15 && mapY == 15 ) && !*found )
             {
                 start = x;
                 visable = true;
@@ -105,45 +114,59 @@ void raycaster( Character* player, ViewPort* displays[], int** map )
         double wallX;
         if( side == 0 ) wallX = player->posY + perpWallDist * rayDirY;
         else            wallX = player->posX + perpWallDist * rayDirX;
-        wallX -= floor((wallX));
+        wallX -= floor( ( wallX ) );
         
         // Draw main display
         drawDispaly( VIEW, x, drawStart, drawEnd, map, side, mapX, mapY );
         // Draw miniMap
         drawMap( MINIMAP, map, player );
-        //SDL_RenderCopy( VIEW->renderer, anch, NULL, &rendQuad );
         // Draw charSheet
         drawSheet( SHEET, player );
 
-    } // end raycaster 
+    } // end raycaster
+
     // Draw Anchovy
     rect.x = start;
     double dist = sqrt( pow( 15 - player->posX, 2 ) + pow( 15 - player->posY, 2) );
+    if( (int)dist == 0 )
+    {
+        visable = false;
+        *found = true;
+    }
     rect.w = rect.w * std::abs( 5 / dist );
     rect.h = rect.h * std::abs( 5 / dist );
     drawAnchovy( VIEW->renderer, &anch, &rect, visable );
+    if( *found )
+    {
+        map[22][23] = 3;
+        map[23][22] = 3;
+    }
 }
 
 /**
  * wallColor - choose wall color
  * 
+ * @x: value of a given position x,y cordinate in a map matrix
+ * @side: flag to add shadow to wall
+ * @rederer: rendering engine used
  */
+
 void wallColor( int x, int side, SDL_Renderer* renderer )
 {
     int r=0,b=0,g=0,a=255;
     switch( x )
     {
-        case 1:
+        case 2:
             r=255,b=0, g=0;
             if( side == 1 )
                 r/=2,b/=2,g/=2;
             break; //red
-        case 2:
+        case 3:
             r=0,g=255,b=0,a=0;     
             if( side == 1 )
                 r/=2,b/=2,g/=2;
             break; //green
-        case 3:
+        case 1:
             r=0,g=0,b=255;
             if( side == 1 )
                 r/=2,b/=2,g/=2;                    
@@ -162,6 +185,13 @@ void wallColor( int x, int side, SDL_Renderer* renderer )
 /**
  * drawDisplay - Draws main game display
  * 
+ * @view: display to draw to on window
+ * @x: relative x position in view
+ * @drawStart: begining relative y position of wall line in view
+ * @drawEnd: Ending relative y position on wall line in view
+ * @map: level to render
+ * @mapX: x position in map
+ * @mapY: y position in map
  */
 
 void drawDispaly( ViewPort* view, int x, int drawStart, int drawEnd, int** map, int side, int mapX, int mapY )
@@ -182,6 +212,10 @@ void drawDispaly( ViewPort* view, int x, int drawStart, int drawEnd, int** map, 
 
 /**
  * drawMap - draws minimap of the level
+ * 
+ * @view: display to draw to on window
+ * @map: level to render
+ * @player: player character struct
  */
 
 void drawMap( ViewPort* view, int** map, Character* player )
@@ -250,7 +284,14 @@ void drawMap( ViewPort* view, int** map, Character* player )
     }
 }
 
-void drawSheet( ViewPort* view, Character* Player )
+/**
+ * drawSheet - draw an info box on the screen
+ * 
+ * @view: display to draw to on window
+ * @player: player character struct
+ */
+
+void drawSheet( ViewPort* view, Character* player )
 {
     SDL_Rect border;
     border.h =  view->height;

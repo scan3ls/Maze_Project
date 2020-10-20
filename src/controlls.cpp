@@ -1,5 +1,14 @@
 #include "../headers/sdl2.h"
 
+/**
+ * keyDown - handle key press controlls
+ * 
+ * @player: player character struct
+ * @map: currently loaded level
+ * 
+ * Return: bool true/false; Capture ESC press and close app
+ */
+
 bool keyDown( Character* player, int** map )
 {
     const Uint8* currentKeyStates = SDL_GetKeyboardState( NULL );
@@ -44,6 +53,13 @@ bool keyDown( Character* player, int** map )
 
     return true;
 }
+
+/**
+ * mouseMove - handle mouse movement controlls
+ * 
+ * @player: player character struct
+ * @rotDirection: -1/1 horizontal rotation controll
+ */
 
 void mouseMove( Character* player, int rotDirection )
 {
