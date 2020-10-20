@@ -199,7 +199,7 @@ void drawMap( ViewPort* view, int** map, Character* player )
     SDL_RenderFillRect( view->renderer, &rect );
     // Draw Facing Vector
     SDL_SetRenderDrawColor( view->renderer,255,0,0,0 );
-    SDL_RenderDrawLine( view->renderer, startX + 32, startY + 32, (startX + 32) + (player->dirY * sqSize), (startY + 32) + (player->dirX * sqSize) );
+    SDL_RenderDrawLine( view->renderer, startX + 32, startY + 32, (startX + 32) + (player->dirX * sqSize), (startY + 32) + (player->dirY * sqSize) );
     SDL_SetRenderDrawColor( view->renderer,0,0,0,0 ); // Black
 
     SDL_Rect left, right, up, down;
