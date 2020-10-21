@@ -11,7 +11,7 @@
  * @found: progress flag to next level
  */
 
-void render( SDL_Renderer* renderer, Character* player, int** map, bool* found )
+void render( SDL_Renderer* renderer, Character* player, Level* level )
 {
 
     ViewPort view =
@@ -38,7 +38,7 @@ void render( SDL_Renderer* renderer, Character* player, int** map, bool* found )
     ViewPort* displays[3] = { &view, &miniMap, &charSheet };
     SDL_RenderClear( renderer );
     // draw main view
-    raycaster( player, displays, map, found );
+    raycaster( player, displays, level );
     // draw anchovy
 
     // Set Default Background Color

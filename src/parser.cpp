@@ -35,17 +35,18 @@ int** getMap( string path )
 }
 
 /**
- * getDeadEnds - get Dead ends for possible anchovy location
+ * getAnchovySpawn - get Anchovy spawn location
  * 
  * Return - list of matrix indecies
  */
 
-int getDeadEnds( int** map )
+int* getAnchovySpawn( int** map )
 {
-    int ends = 0;
+    int counter = 0;
     int row = 1;
     int column = 1;
     int up, down, left, right;
+    int* pos = (int*)malloc( sizeof( int ) * 2 );
 
     while( row < 23 )
     {
@@ -56,9 +57,19 @@ int getDeadEnds( int** map )
             down = map[row + 1][column];
             left = map[row][column - 1];
             right = map[row][column + 1];
-            if( ( up + down + left + right ) == 3 ) ends++;
+            if( ( up + down + left + right ) == 3 ) 
+            {
+                counter++;
+                if( counter == 3 )
+                {
+                    pos[0] = row;
+                    pos[1] = column;
+                    row = 30;
+                    column = 30;
+                }
+            }
         }
         row++;
     }
-    return ends;
+    return pos;
 }

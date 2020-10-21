@@ -13,10 +13,18 @@ const int mapHeight = 24;
  */
 int main( int argc, char* argv[] )
 {
+    // Get first level
     std::string path = "resources/maps/level_0.map";
     int** map = getMap( path.c_str() );
-    //int numEnds = getDeadEnds( map );
 
+    // Get anchovy location
+    int* spawn;
+
+    // Set Anchovy location
+    int AnchPosX = 15;
+    int AnchPosY = 15;
+
+    printf("%d, %d\n", AnchPosX, AnchPosY);
     // Define windows & renderers
     SDL_Window* mWindow;
     SDL_Renderer* mRenderer;
@@ -30,6 +38,12 @@ int main( int argc, char* argv[] )
     player.posX = 12; player.posY = 12;
     player.dirX = -1; player.dirY = 0;
     player.planeX = 0; player.planeY = 0.66;
+
+    Level level;
+    level.AnchovyPosX = AnchPosX;
+    level.AnchovyPosY = AnchPosY;
+    level.map = map;
+    level.progress = false;
 
     double time = 0;
     double oldTime = 0;
@@ -48,7 +62,7 @@ int main( int argc, char* argv[] )
                 running = false;
 
 
-            render( mRenderer, &player, map, &progress );
+            render( mRenderer, &player, &level );
 
             oldTime = time;
             time = SDL_GetTicks();
@@ -58,7 +72,7 @@ int main( int argc, char* argv[] )
             switch ( e.type )
             {
                 case SDL_KEYDOWN:
-                    running = keyDown( &player, map );
+                    running = keyDown( &player, level.map );
                     break;
                 case SDL_MOUSEMOTION:
                     oldMouseX = mouseX;
@@ -68,21 +82,29 @@ int main( int argc, char* argv[] )
                     if( mouseX - oldMouseX < 0 ) rotDirection = -1;
                     mouseMove( &player, rotDirection );
                     if( mouseX <= 20 || mouseX >= (GAME_WIDTH - 20) )
-                        SDL_WarpMouseInWindow( mWindow, GAME_WIDTH / 2, GAME_HEIGHT / 2 );
+                        SDL_WarpMouseInWindow( mWindow, (GAME_WIDTH) / 2, GAME_HEIGHT / 2 );
                     if( mouseY <= 20 || mouseY >= (GAME_HEIGHT - 20) )
-                        SDL_WarpMouseInWindow( mWindow, GAME_WIDTH / 2, GAME_HEIGHT / 2 );
+                        SDL_WarpMouseInWindow( mWindow, (GAME_WIDTH) / 2, GAME_HEIGHT / 2 );
                     break;
                 default:
                     break;
             }
-            if( ((int)player.posX == 22 && (int)player.posY == 22) && progress )
+            if( ((int)player.posX == 22 && (int)player.posY == 22) && level.progress )
             {
                 player.posX = 1;
                 player.posY = 1;
                 path[21]++;
                 if( path[21] == '3' ) path[21] = '0';
-                map = getMap( path.c_str() );
-                progress = false;
+                level.map = getMap( path.c_str() );
+                level.progress = false;
+
+                spawn = getAnchovySpawn( level.map );
+                // Set Anchovy location
+                level.AnchovyPosX = spawn[0];
+                level.AnchovyPosY = spawn[1];
+                free(spawn);
+                printf("%d, %d\n", level.AnchovyPosX, level.AnchovyPosY);
+                
             }
         }
     }

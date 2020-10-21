@@ -9,12 +9,13 @@
 #include <cmath>
 #include <vector>
 #include <fstream>
+#include <stdlib.h>
 
 #define SCREEN_WIDTH    1280
 #define SCREEN_HEIGHT   720
-#define GAME_WIDTH      960
+#define GAME_WIDTH      SCREEN_WIDTH - 320
 #define GAME_HEIGHT     SCREEN_HEIGHT
-#define MAP_SIZE        SCREEN_WIDTH - GAME_WIDTH //miniMap size
+#define MAP_SIZE        SCREEN_WIDTH - ( GAME_WIDTH )  //miniMap size
 
 typedef struct SDL_Instance
 {
@@ -36,6 +37,14 @@ typedef struct viewport
     int posX, posY; //inital starting position
 } ViewPort;
 
+typedef struct Level
+{
+    int** map;
+    int AnchovyPosX;
+    int AnchovyPosY;
+    bool progress;
+} Level;
+
 /******************/
 /*   Functions    */
 /******************/
@@ -53,14 +62,14 @@ void mouseMove( Character* player, int rotDirection );
 
 /* getMap.cpp */
 int** getMap( std::string path );
-int getDeadEnds( int** map );
+int* getAnchovySpawn( int** map );
 
 /* renderer.cpp */
-void render( SDL_Renderer* renderer, Character* player, int** map, bool* found );
+void render( SDL_Renderer* renderer, Character* player, Level* level );
 bool drawAnchovy( SDL_Renderer* renderer, SDL_Texture** anch, SDL_Rect* rect, bool visable );
 
 /* raycaster.cpp */
-void raycaster( Character* player, ViewPort* displays[], int** map, bool* found );
+void raycaster( Character* player, ViewPort* displays[], Level* level );
 void wallColor( int x, int side, SDL_Renderer* renderer );
 void drawDispaly( ViewPort* view, int x, int drawStart, int drawEnd, int** map, int side, int mapX, int mapY );
 void drawMap( ViewPort* view, int** map, Character* player );

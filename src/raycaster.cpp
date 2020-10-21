@@ -8,11 +8,10 @@
  *
  * @player: player character struct
  * @displays: list of displays as ViewPorts on the window
- * @map: level to be rendered
- * @found: progress flag to move to next level
+ * @level: current level data
  */ 
 
-void raycaster( Character* player, ViewPort* displays[], int** map, bool* found )
+void raycaster( Character* player, ViewPort* displays[], Level* level)
 {
     SDL_Texture* anch = NULL;
     SDL_Rect rect = {0,0,0,0};
@@ -82,11 +81,11 @@ void raycaster( Character* player, ViewPort* displays[], int** map, bool* found 
                 side = 1;
             }
             //Check if ray has hit a wall
-            if(map[mapX][mapY] > 0)
+            if(level->map[mapX][mapY] > 0)
             {
                 hit = 1;
             }
-            else if( ( mapX == 15 && mapY == 15 ) && !*found )
+            else if( ( mapX == level->AnchovyPosX && mapY == level->AnchovyPosY ) && !(level->progress) )
             {
                 start = x;
                 visable = true;
@@ -109,7 +108,7 @@ void raycaster( Character* player, ViewPort* displays[], int** map, bool* found 
 
         // Texture calcs
         bool isWall = false;
-        if( map[mapX][mapY] > 0 ) isWall = true;
+        if( level->map[mapX][mapY] > 0 ) isWall = true;
 
         double wallX;
         if( side == 0 ) wallX = player->posY + perpWallDist * rayDirY;
@@ -117,30 +116,31 @@ void raycaster( Character* player, ViewPort* displays[], int** map, bool* found 
         wallX -= floor( ( wallX ) );
         
         // Draw main display
-        drawDispaly( VIEW, x, drawStart, drawEnd, map, side, mapX, mapY );
+        drawDispaly( VIEW, x, drawStart, drawEnd, level->map, side, mapX, mapY );
         // Draw miniMap
-        drawMap( MINIMAP, map, player );
+        drawMap( MINIMAP, level->map, player );
         // Draw charSheet
-        drawSheet( SHEET, player );
+        //drawSheet( SHEET, player );
 
     } // end raycaster
 
     // Draw Anchovy
     rect.x = start;
-    double dist = sqrt( pow( 15 - player->posX, 2 ) + pow( 15 - player->posY, 2) );
+    double dist = sqrt( pow( level->AnchovyPosX - player->posX, 2 ) + pow( level->AnchovyPosY - player->posY, 2) );
     if( (int)dist == 0 )
     {
         visable = false;
-        *found = true;
+        level->progress = true;
     }
     rect.w = rect.w * std::abs( 5 / dist );
     rect.h = rect.h * std::abs( 5 / dist );
     drawAnchovy( VIEW->renderer, &anch, &rect, visable );
-    if( *found )
+    if( level->progress )
     {
-        map[22][23] = 3;
-        map[23][22] = 3;
+        level->map[22][23] = 3;
+        level->map[23][22] = 3;
     }
+    SDL_DestroyTexture( anch );
 }
 
 /**
@@ -202,6 +202,7 @@ void drawDispaly( ViewPort* view, int x, int drawStart, int drawEnd, int** map, 
     
     //choose wall color
     //draw walls
+    int height = drawEnd - drawStart;
     wallColor( map[mapX][mapY], side, view->renderer );
     SDL_RenderDrawLine(view->renderer,x+view->posX,drawStart,x+view->posX,drawEnd);
     
