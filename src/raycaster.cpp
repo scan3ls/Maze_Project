@@ -10,7 +10,6 @@
  * @displays: list of displays as ViewPorts on the window
  * @level: current level data
  */ 
-
 void raycaster( Character* player, ViewPort* displays[], Level* level)
 {
     SDL_Texture* anch = NULL;
@@ -93,7 +92,7 @@ void raycaster( Character* player, ViewPort* displays[], Level* level)
 
         } // end DDA
 
-        //Calculate distance projected on camera direction (Euclidean distance will give fisheye effect!)
+        //Calculate distance projected on camera direction
         if( side == 0 ) perpWallDist = (mapX - player->posX + (1 - stepX) / 2) / rayDirX;
         else            perpWallDist = (mapY - player->posY + (1 - stepY) / 2) / rayDirY;
 
@@ -105,29 +104,17 @@ void raycaster( Character* player, ViewPort* displays[], Level* level)
         if( drawStart < 0 ) drawStart = 0;
         int drawEnd = lineHeight / 2 + VIEW->height / 2;
         if( drawEnd >= VIEW->height ) drawEnd = VIEW->height - 1;
-
-        // Texture calcs
-        bool isWall = false;
-        if( level->map[mapX][mapY] > 0 ) isWall = true;
-
-        double wallX;
-        if( side == 0 ) wallX = player->posY + perpWallDist * rayDirY;
-        else            wallX = player->posX + perpWallDist * rayDirX;
-        wallX -= floor( ( wallX ) );
         
         // Draw main display
         drawDispaly( VIEW, x, drawStart, drawEnd, level->map, side, mapX, mapY );
         // Draw miniMap
         drawMap( MINIMAP, level->map, player );
-        // Draw charSheet
-        //drawSheet( SHEET, player );
-
     } // end raycaster
 
-    // Draw Anchovy
+    // Scale & Draw Anchovy
     rect.x = start;
     double dist = sqrt( pow( level->AnchovyPosX - player->posX, 2 ) + pow( level->AnchovyPosY - player->posY, 2) );
-    if( (int)dist == 0 )
+    if( (int)dist <= 1 )
     {
         visable = false;
         level->progress = true;
@@ -135,6 +122,8 @@ void raycaster( Character* player, ViewPort* displays[], Level* level)
     rect.w = rect.w * std::abs( 5 / dist );
     rect.h = rect.h * std::abs( 5 / dist );
     drawAnchovy( VIEW->renderer, &anch, &rect, visable );
+
+    // Change corner of the map from red to green
     if( level->progress )
     {
         level->map[22][23] = 3;
@@ -150,7 +139,6 @@ void raycaster( Character* player, ViewPort* displays[], Level* level)
  * @side: flag to add shadow to wall
  * @rederer: rendering engine used
  */
-
 void wallColor( int x, int side, SDL_Renderer* renderer )
 {
     int r=0,b=0,g=0,a=255;
@@ -193,7 +181,6 @@ void wallColor( int x, int side, SDL_Renderer* renderer )
  * @mapX: x position in map
  * @mapY: y position in map
  */
-
 void drawDispaly( ViewPort* view, int x, int drawStart, int drawEnd, int** map, int side, int mapX, int mapY )
 {
     // draw sky
@@ -218,7 +205,6 @@ void drawDispaly( ViewPort* view, int x, int drawStart, int drawEnd, int** map, 
  * @map: level to render
  * @player: player character struct
  */
-
 void drawMap( ViewPort* view, int** map, Character* player )
 {
     int sqSize = 64;
@@ -291,15 +277,7 @@ void drawMap( ViewPort* view, int** map, Character* player )
  * @view: display to draw to on window
  * @player: player character struct
  */
-
 void drawSheet( ViewPort* view, Character* player )
 {
-    SDL_Rect border;
-    border.h =  view->height;
-    border.w = view->width;
-    border.x = view->posX;
-    border.y = view->posY;
-
-    SDL_SetRenderDrawColor( view->renderer,0,0,0,0 );
-    SDL_RenderDrawRect( view->renderer, &border );
+    //code here
 }

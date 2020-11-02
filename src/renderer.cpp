@@ -10,7 +10,6 @@
  * @map: level to render
  * @found: progress flag to next level
  */
-
 void render( SDL_Renderer* renderer, Character* player, Level* level )
 {
 
@@ -39,7 +38,6 @@ void render( SDL_Renderer* renderer, Character* player, Level* level )
     SDL_RenderClear( renderer );
     // draw main view
     raycaster( player, displays, level );
-    // draw anchovy
 
     // Set Default Background Color
     SDL_SetRenderDrawColor( renderer,255,255,255,0 );

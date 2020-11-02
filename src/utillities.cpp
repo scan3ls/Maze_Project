@@ -6,7 +6,6 @@
  * @window: pointer to created window
  * @renderer: pointer to created renderer
  */
-
 void setup( SDL_Window** window, SDL_Renderer** renderer )
 {
     SDL_Init( SDL_INIT_VIDEO );

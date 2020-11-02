@@ -34,19 +34,18 @@ int main( int argc, char* argv[] )
 
     setup( &mWindow, &mRenderer );
 
+    // setup player
     Character player;
     player.posX = 12; player.posY = 12;
     player.dirX = -1; player.dirY = 0;
     player.planeX = 0; player.planeY = 0.66;
 
+    // setup level
     Level level;
     level.AnchovyPosX = AnchPosX;
     level.AnchovyPosY = AnchPosY;
     level.map = map;
     level.progress = false;
-
-    double time = 0;
-    double oldTime = 0;
 
     int mouseX, mouseY;
     SDL_GetMouseState( &mouseX, &mouseY );
@@ -61,26 +60,24 @@ int main( int argc, char* argv[] )
             if( e.type == SDL_QUIT )
                 running = false;
 
-
             render( mRenderer, &player, &level );
-
-            oldTime = time;
-            time = SDL_GetTicks();
-            double frameTime = ( time - oldTime ) / 1000.0;
 
             int oldMouseX, rotDirection;
             switch ( e.type )
             {
                 case SDL_KEYDOWN:
+                    // handle keydown events
                     running = keyDown( &player, level.map );
                     break;
                 case SDL_MOUSEMOTION:
                     oldMouseX = mouseX;
                     SDL_GetMouseState( &mouseX, &mouseY );
                     rotDirection = 0;
+                    // set rotation direction and move
                     if( mouseX - oldMouseX > 0 ) rotDirection = 1;
                     if( mouseX - oldMouseX < 0 ) rotDirection = -1;
                     mouseMove( &player, rotDirection );
+                    // Capture mouse in window
                     if( mouseX <= 20 || mouseX >= (GAME_WIDTH - 20) )
                         SDL_WarpMouseInWindow( mWindow, (GAME_WIDTH) / 2, GAME_HEIGHT / 2 );
                     if( mouseY <= 20 || mouseY >= (GAME_HEIGHT - 20) )
