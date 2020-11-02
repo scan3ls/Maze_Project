@@ -39,7 +39,6 @@ int** getMap( string path )
  * 
  * Return - list of matrix indecies
  */
-
 int* getAnchovySpawn( int** map )
 {
     int counter = 0;
@@ -52,12 +51,9 @@ int* getAnchovySpawn( int** map )
     {
         for( column = 1; column < 23; column++ )
         {
-            if( map[row][column] == 1 ) continue;
-            up = map[row - 1][column];
-            down = map[row + 1][column];
-            left = map[row][column - 1];
-            right = map[row][column + 1];
-            if( ( up + down + left + right ) == 3 ) 
+            if( isWall( map[row][column] ) ) continue;
+            // Choosing third dead end to spawn anchovy
+            if( isDeadEnd( map, row, column ) ) 
             {
                 counter++;
                 if( counter == 3 )
@@ -72,4 +68,42 @@ int* getAnchovySpawn( int** map )
         row++;
     }
     return pos;
+}
+
+/**
+ * isWall - check if num represents a wall
+ * @num: int to check
+ * 
+ * Return: True if is wall else False
+ */
+bool isWall( int num )
+{
+    if( num > 0 ) return true;
+    
+    return false;
+}
+
+/**
+ * isDeadEnd - check if position in map at given 
+ *             row & column is a dead end
+ * @map: 2d array
+ * @row: row of the 2d array
+ * @column: column of the 2d array
+ * 
+ * Return: True if values at cardinal points around 
+ *         the position is three else False
+ */
+bool isDeadEnd( int** map, int row, int column )
+{
+    int up, down, left, right;
+
+    up = map[row - 1][column];
+    down = map[row + 1][column];
+    left = map[row][column - 1];
+    right = map[row][column + 1];
+    int sum = up + down + left + right;
+
+    if( sum == 3 ) return true;
+
+    return false;
 }
